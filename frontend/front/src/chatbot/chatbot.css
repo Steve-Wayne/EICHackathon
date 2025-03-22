@@ -1,5 +1,5 @@
 body {
-  background: #000;
+  background:linear-gradient(180deg, #000000, #6e6a6a);
   color: #fff;
   font-family: "Poppins", sans-serif;
   display: flex;
@@ -7,6 +7,7 @@ body {
   align-items: center;
   height: 100vh;
   margin: 0;
+  animation: fadeIn 1.5s ease-in-out;
 }
 
 .chatbot-container {
