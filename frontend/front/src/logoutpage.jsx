@@ -1,6 +1,6 @@
 import React from "react";
 import "./LogoutPage.css"; // Import the CSS file
-
+import { Link } from "react-router-dom";
 const LogoutPage = () => {
   const handleLogout = () => {
     console.log("User logged out!");
@@ -11,9 +11,9 @@ const LogoutPage = () => {
       <div className="logout-card">
         <h2 className="title">Goodbye!</h2>
         <p className="subtitle">You have successfully logged out.</p>
-        <button onClick={handleLogout} className="logout-btn">
+        <Link to="/"><button onClick={handleLogout} className="logout-btn">
           Log In Again
-        </button>
+        </button></Link>
       </div>
     </div>
   );
