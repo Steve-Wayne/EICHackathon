@@ -4,23 +4,50 @@ import { User } from "../models/User.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 
+// const generateAccessAndRefreshToken = async (userId) => {
+//   try {
+//     const user = await User.findById(userId);
+//     if (!user) {
+//       throw new ApiError(404, "User not found");
+//     }
+//     const accessToken = user.generateAccessToken();
+//     const refreshToken = user.generateRefreshToken();
+
+//     user.refreshToken = refreshToken;
+//     await user.save({ validateBeforeSave: false });
+
+//     return { accessToken, refreshToken };
+//   } catch (error) {
+//     throw new ApiError(500, "Token generation failed");
+//   }
+// };
+
 const generateAccessAndRefreshToken = async (userId) => {
   try {
     const user = await User.findById(userId);
     if (!user) {
       throw new ApiError(404, "User not found");
     }
+
+    console.log("User found:", user); // Debugging
+
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
+
+    if (!accessToken || !refreshToken) {
+      throw new ApiError(500, "Generated token is empty");
+    }
 
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
 
     return { accessToken, refreshToken };
   } catch (error) {
+    console.error("Error generating token:", error);
     throw new ApiError(500, "Token generation failed");
   }
 };
+
 
 const registerUser = asynchandler(async (req, res) => {
   const { fullName, email, username, password } = req.body;
@@ -82,7 +109,7 @@ const loginUser = asynchandler(async (req, res) => {
   }
 
   const isPasswordValid = await user.isPasswordCorrect(password);
-
+  console.log("Password Valid:", isPasswordValid)
   if (!isPasswordValid) {
     throw new ApiError(401, "Invalid User Credentials");
   }
