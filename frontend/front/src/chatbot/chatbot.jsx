@@ -15,31 +15,28 @@
 //     if (input.trim() === "") return;
 
 //     const newMessage = { text: input, sender: "user" };
-//     setMessages([...messages, newMessage]);
+//     setMessages((prevMessages) => [...prevMessages, newMessage]);
+//     setInput("");
 //     setLoading(true);
 
-//     const eventSource = new EventSource("http://localhost:5000/api/query");
+//     try {
+//       const response = await fetch("http://localhost:8000/api/v1/chatbot/query", {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ userQuery: input }),
+//       });
 
-//     eventSource.onmessage = (event) => {
+//       const data = await response.json();
+//       console.log(data.content)
 //       setMessages((prevMessages) => [
 //         ...prevMessages,
-//         { text: event.data, sender: "bot" },
+//         { text: data.data.content, sender: "bot" },
 //       ]);
-//       setLoading(false);
-//     };
+//     } catch (error) {
+//       console.error("Error:", error);
+//     }
 
-//     eventSource.onerror = (err) => {
-//       console.error("Error:", err);
-//       eventSource.close();
-//       setLoading(false);
-//     };
-
-//     setTimeout(() => {
-//       eventSource.close();
-//       setLoading(false);
-//     }, 20000);
-
-//     setInput("");
+//     setLoading(false);
 //   };
 
 //   return (
@@ -89,6 +86,7 @@
 //               {msg.text}
 //             </div>
 //           ))}
+//           {loading && <div className="message bot">Typing...</div>}
 //         </div>
 //         <div className="chat-input">
 //           <input
@@ -110,17 +108,14 @@
 // export default ChatbotPage;
 
 
-
-
-
 import React, { useState } from "react";
 import "./Chatbot.css";
 import { Link } from "react-router-dom";
-
 const ChatbotPage = () => {
   const [messages, setMessages] = useState([
     { text: "Hello! How can I assist you today?", sender: "bot" },
   ]);
+  const [profiles, setProfiles] = useState([]); // Store extracted profiles
   const [input, setInput] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -135,17 +130,25 @@ const ChatbotPage = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8000/api/v1/chatbot", {
+      const response = await fetch("http://localhost:8000/api/v1/chatbot/query", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({ userQuery: input }),
       });
 
       const data = await response.json();
+      console.log(data);
+
       setMessages((prevMessages) => [
         ...prevMessages,
-        { text: data.reply, sender: "bot" },
+        { text: data.data.content, sender: "bot" },
       ]);
+
+      // If profiles exist, update state
+      if (data.data.profiles && data.data.profiles.length > 0) {
+        setProfiles(data.data.profiles);
+      }
+
     } catch (error) {
       console.error("Error:", error);
     }
@@ -168,7 +171,7 @@ const ChatbotPage = () => {
             <ul>
               <Link to="/editprofilepage"><li>Edit Profile</li></Link>
               <li>Settings</li>
-              <li>Logout</li>
+              <Link to="/logoutpage"><li>Logout</li></Link>
             </ul>
           </div>
         )}
@@ -201,7 +204,22 @@ const ChatbotPage = () => {
             </div>
           ))}
           {loading && <div className="message bot">Typing...</div>}
+          {/* Display Profile Links */}
+          {profiles.length > 0 && (
+            <div className="profiles-section">
+              <h3>Profiles Found:</h3>
+              {profiles.map((profile, index) => (
+                <div key={index} className="profile-link">
+                  <p><strong>{profile.name}</strong></p>
+                  <a href={profile.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                  {" | "}
+                  <a href={profile.twitter} target="_blank" rel="noopener noreferrer">Twitter</a>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
+
         <div className="chat-input">
           <input
             type="text"
