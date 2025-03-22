@@ -1,4 +1,4 @@
-// import React, { useState } from "react";
+// import React, { useState, useEffect } from "react";
 // import "./Chatbot.css";
 // import { Link } from "react-router-dom";
 
@@ -6,10 +6,15 @@
 //   const [messages, setMessages] = useState([
 //     { text: "Hello! How can I assist you today?", sender: "bot" },
 //   ]);
+//   const [profiles, setProfiles] = useState([]);
 //   const [input, setInput] = useState("");
 //   const [sidebarOpen, setSidebarOpen] = useState(false);
 //   const [profileOpen, setProfileOpen] = useState(false);
 //   const [loading, setLoading] = useState(false);
+//   const [botResponse, setBotResponse] = useState("");
+//   const [displayedResponse, setDisplayedResponse] = useState("");
+//   const [showProfiles, setShowProfiles] = useState(false);
+//   const [isTyping, setIsTyping] = useState(false);
 
 //   const handleSend = async () => {
 //     if (input.trim() === "") return;
@@ -18,6 +23,7 @@
 //     setMessages((prevMessages) => [...prevMessages, newMessage]);
 //     setInput("");
 //     setLoading(true);
+//     setIsTyping(true);
 
 //     try {
 //       const response = await fetch("http://localhost:8000/api/v1/chatbot/query", {
@@ -27,21 +33,48 @@
 //       });
 
 //       const data = await response.json();
-//       console.log(data.content)
-//       setMessages((prevMessages) => [
-//         ...prevMessages,
-//         { text: data.data.content, sender: "bot" },
-//       ]);
+//       setBotResponse(data.data.content);
+//       setLoading(false);
+
+//       if (data.data.profiles && data.data.profiles.length > 0) {
+//         setProfiles(data.data.profiles);
+//       }
 //     } catch (error) {
 //       console.error("Error:", error);
+//       setLoading(false);
 //     }
+//   };
 
+//   const handleStop = () => {
+//     setBotResponse("");
+//     setDisplayedResponse("");
+//     setIsTyping(false);
 //     setLoading(false);
 //   };
 
+//   useEffect(() => {
+//     if (botResponse) {
+//       let index = 0;
+//       setDisplayedResponse("");
+//       setShowProfiles(false);
+//       setIsTyping(true);
+//       const interval = setInterval(() => {
+//         if (index < botResponse.length) {
+//           setDisplayedResponse((prev) => prev + botResponse[index]);
+//           index++;
+//         } else {
+//           clearInterval(interval);
+//           setMessages((prevMessages) => [...prevMessages, { text: botResponse, sender: "bot" }]);
+//           setBotResponse("");
+//           setShowProfiles(true);
+//           setIsTyping(false);
+//         }
+//       }, 20);
+//     }
+//   }, [botResponse]);
+
 //   return (
 //     <div className="chatbot-container">
-//       {/* Profile Icon */}
 //       <div className="profile-container">
 //         <img
 //           src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
@@ -54,18 +87,16 @@
 //             <ul>
 //               <Link to="/editprofilepage"><li>Edit Profile</li></Link>
 //               <li>Settings</li>
-//               <li>Logout</li>
+//               <Link to="/logoutpage"><li>Logout</li></Link>
 //             </ul>
 //           </div>
 //         )}
 //       </div>
 
-//       {/* Sidebar Toggle Button */}
 //       <button className="sidebar-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
 //         ☰
 //       </button>
 
-//       {/* Sidebar */}
 //       <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
 //         <div className="random">
 //           <ul>
@@ -77,17 +108,31 @@
 //         </div>
 //       </div>
 
-//       {/* Chatbot UI */}
 //       <div className="chatbot">
 //         <div className="chat-header">Bridge AI</div>
 //         <div className="chat-messages">
 //           {messages.map((msg, index) => (
-//             <div key={index} className={`message ${msg.sender}`}>
+//             <div key={index} className={`message ${msg.sender} justify-text`}>
 //               {msg.text}
 //             </div>
 //           ))}
+//           {botResponse && <div className="message bot justify-text">{displayedResponse}</div>}
 //           {loading && <div className="message bot">Typing...</div>}
+//           {showProfiles && profiles.length > 0 && (
+//             <div className="profiles-section">
+//               <h3>Profiles Found:</h3>
+//               {profiles.map((profile, index) => (
+//                 <div key={index} className="profile-link">
+//                   <p><strong>{profile.name}</strong></p>
+//                   <a href={profile.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+//                   {" | "}
+//                   <a href={profile.twitter} target="_blank" rel="noopener noreferrer">Twitter</a>
+//                 </div>
+//               ))}
+//             </div>
+//           )}
 //         </div>
+
 //         <div className="chat-input">
 //           <input
 //             type="text"
@@ -96,8 +141,8 @@
 //             onChange={(e) => setInput(e.target.value)}
 //             onKeyDown={(e) => e.key === "Enter" && handleSend()}
 //           />
-//           <button onClick={handleSend} disabled={loading}>
-//             {loading ? "Processing..." : "➤"}
+//           <button onClick={isTyping ? handleStop : handleSend}>
+//             {isTyping ? "Stop" : "➤"}
 //           </button>
 //         </div>
 //       </div>
@@ -108,18 +153,24 @@
 // export default ChatbotPage;
 
 
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import "./Chatbot.css";
 import { Link } from "react-router-dom";
+
 const ChatbotPage = () => {
   const [messages, setMessages] = useState([
     { text: "Hello! How can I assist you today?", sender: "bot" },
   ]);
-  const [profiles, setProfiles] = useState([]); // Store extracted profiles
+  const [profiles, setProfiles] = useState([]);
   const [input, setInput] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [botResponse, setBotResponse] = useState("");
+  const [displayedResponse, setDisplayedResponse] = useState("");
+  const [showProfiles, setShowProfiles] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
 
   const handleSend = async () => {
     if (input.trim() === "") return;
@@ -128,6 +179,7 @@ const ChatbotPage = () => {
     setMessages((prevMessages) => [...prevMessages, newMessage]);
     setInput("");
     setLoading(true);
+    setIsTyping(true);
 
     try {
       const response = await fetch("http://localhost:8000/api/v1/chatbot/query", {
@@ -137,28 +189,48 @@ const ChatbotPage = () => {
       });
 
       const data = await response.json();
-      console.log(data);
+      setBotResponse(data.data.content);
+      setLoading(false);
 
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text: data.data.content, sender: "bot" },
-      ]);
-
-      // If profiles exist, update state
       if (data.data.profiles && data.data.profiles.length > 0) {
         setProfiles(data.data.profiles);
       }
-
     } catch (error) {
       console.error("Error:", error);
+      setLoading(false);
     }
+  };
 
+  const handleStop = () => {
+    setBotResponse("");
+    setDisplayedResponse("");
+    setIsTyping(false);
     setLoading(false);
   };
 
+  useEffect(() => {
+    if (botResponse) {
+      let index = 0;
+      setDisplayedResponse("");
+      setShowProfiles(false);
+      setIsTyping(true);
+      const interval = setInterval(() => {
+        if (index < botResponse.length) {
+          setDisplayedResponse((prev) => prev + botResponse[index]);
+          index++;
+        } else {
+          clearInterval(interval);
+          setMessages((prevMessages) => [...prevMessages, { text: botResponse, sender: "bot" }]);
+          setBotResponse("");
+          setShowProfiles(true);
+          setIsTyping(false);
+        }
+      }, 5);
+    }
+  }, [botResponse]);
+
   return (
     <div className="chatbot-container">
-      {/* Profile Icon */}
       <div className="profile-container">
         <img
           src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
@@ -177,35 +249,31 @@ const ChatbotPage = () => {
         )}
       </div>
 
-      {/* Sidebar Toggle Button */}
       <button className="sidebar-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
         ☰
       </button>
 
-      {/* Sidebar */}
       <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="random">
           <ul>
-            <li>Menu</li>
-            <li>Home</li>
-            <li>Settings</li>
-            <li>Help</li>
+          <Link to="/dashboard"><li>Home</li></Link>
+            <li>Showcase</li>
+            <Link to="/help"><li>Help</li></Link>
           </ul>
         </div>
       </div>
 
-      {/* Chatbot UI */}
       <div className="chatbot">
         <div className="chat-header">Bridge AI</div>
         <div className="chat-messages">
           {messages.map((msg, index) => (
-            <div key={index} className={`message ${msg.sender}`}>
+            <div key={index} className={`message ${msg.sender} justify-text`}>
               {msg.text}
             </div>
           ))}
+          {botResponse && <div className="message bot justify-text">{displayedResponse}</div>}
           {loading && <div className="message bot">Typing...</div>}
-          {/* Display Profile Links */}
-          {profiles.length > 0 && (
+          {showProfiles && profiles.length > 0 && (
             <div className="profiles-section">
               <h3>Profiles Found:</h3>
               {profiles.map((profile, index) => (
@@ -228,8 +296,8 @@ const ChatbotPage = () => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
           />
-          <button onClick={handleSend} disabled={loading}>
-            {loading ? "Processing..." : "➤"}
+          <button onClick={isTyping ? handleStop : handleSend}>
+            {isTyping ? "Stop" : "➤"}
           </button>
         </div>
       </div>
