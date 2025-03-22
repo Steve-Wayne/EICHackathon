@@ -231,7 +231,7 @@ const ChatbotPage = () => {
 
   return (
     <div className="chatbot-container">
-      <div className="profile-container">
+      {/* <div className="profile-container">
         <img
           src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
           alt="Profile"
@@ -247,7 +247,35 @@ const ChatbotPage = () => {
             </ul>
           </div>
         )}
-      </div>
+      </div> */}
+      <div className="profile-container">
+  {/* Profile Icon */}
+  <img
+    src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+    alt="Profile"
+    className="profile-icon"
+    onClick={() => setProfileOpen(!profileOpen)}
+  />
+  {profileOpen && (
+    <div className="profile-dropdown">
+      <ul>
+        <Link to="/editprofilepage"><li>Edit Profile</li></Link>
+        <li>Settings</li>
+        <Link to="/logoutpage"><li>Logout</li></Link>
+      </ul>
+    </div>
+  )}
+
+  {/* New Articles Icon */}
+  <Link to="/articles">
+    <img
+      src="https://cdn-icons-png.flaticon.com/128/11223/11223679.png"
+      alt="Articles"
+      className="articles-icon"
+    />
+  </Link>
+</div>
+
 
       <button className="sidebar-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
         ☰
@@ -257,7 +285,7 @@ const ChatbotPage = () => {
         <div className="random">
           <ul>
           <Link to="/dashboard"><li>Home</li></Link>
-            <li>Showcase</li>
+            <Link to="/products"><li>Showcase</li></Link>
             <Link to="/help"><li>Help</li></Link>
           </ul>
         </div>
