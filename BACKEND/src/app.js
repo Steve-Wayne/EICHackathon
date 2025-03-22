@@ -23,10 +23,10 @@ app.use(cookieParser());
 import userRouter from "./routes/user.routes.js";
 import chatbotRouter from "./routes/chatbot.routes.js";
 import articlesRouter from "./routes/articles.routes.js"; // Import new articles route
-
+import productHuntRouter from "./routes/producthunt.routes.js";
 // Routes declaration
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/chatbot", chatbotRouter);
 app.use("/api/v1/articles", articlesRouter); // Add new route
-
+app.use("/api/v1/products", productHuntRouter);
 export { app };

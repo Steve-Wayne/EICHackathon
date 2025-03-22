@@ -8,6 +8,7 @@ import SignupPage from './signup/signup.jsx';
 import EditProfilePage from './editprofilepage/editprofilepage.jsx';
 import Dashboard from './getstarted/getstarted.jsx';
 import ArticlesPage from './Article/article.jsx';
+import ProductsPage from './Products/Productspage.jsx';
 function App() {
   const [count, setCount] = useState(0)
 
@@ -15,6 +16,7 @@ function App() {
     <>
     <Router>
       <Routes>
+        <Route path="/products" element={<ProductsPage/>}/>
         <Route path="/articles" element={<ArticlesPage/>}/>
         <Route path="/chatbotpage" element={<ChatbotPage/>}/>
         <Route path="/" element={<LoginPage/>}/>
