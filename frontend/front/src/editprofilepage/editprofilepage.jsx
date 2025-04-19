@@ -9,7 +9,7 @@ const EditProfilePage = () => {
 
   const handleSaveChanges = (e) => {
     e.preventDefault();
-    console.log("Updated profile:", { username, fullName, email, password });
+    console.log("Updated profile:", { username, fullName, email });
   };
 
   return (
