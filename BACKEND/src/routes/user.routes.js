@@ -5,9 +5,18 @@ import { logoutUser } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middleware/auth.middleware.js";
 import { refreshAccessToken } from "../controllers/user.controller.js";
 import { changeCurrentPassword } from "../controllers/user.controller.js";
+import rateLimit from "express-rate-limit";
+
 const router = Router();
 
-router.route("/register").post(registerUser);
+// Rate limiter for the /register route
+const registerRateLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 10, // Limit each IP to 10 requests per windowMs
+  message: "Too many accounts created from this IP, please try again after a minute.",
+});
+
+router.route("/register").post(registerRateLimiter, registerUser);
 
 router.route("/login").post(loginUser);
 
