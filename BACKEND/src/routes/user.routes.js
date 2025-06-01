@@ -9,6 +9,7 @@ import rateLimit from "express-rate-limit";
 
 const router = Router();
 
+
 // Configure rate limiter for logout route
 const logoutRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -17,6 +18,16 @@ const logoutRateLimiter = rateLimit({
 });
 
 router.route("/register").post(registerUser);
+=======
+// Rate limiter for the /register route
+const registerRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: "Too many accounts created from this IP, please try again after 15 minutes",
+});
+
+router.route("/register").post(registerRateLimiter, registerUser);
+
 
 router.route("/login").post(loginUser);
 
