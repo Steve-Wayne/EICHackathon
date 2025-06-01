@@ -5,7 +5,16 @@ import { logoutUser } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middleware/auth.middleware.js";
 import { refreshAccessToken } from "../controllers/user.controller.js";
 import { changeCurrentPassword } from "../controllers/user.controller.js";
+import rateLimit from "express-rate-limit";
+
 const router = Router();
+
+// Configure rate limiter for logout route
+const logoutRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: "Too many logout attempts from this IP, please try again later.",
+});
 
 router.route("/register").post(registerUser);
 
@@ -13,7 +22,7 @@ router.route("/login").post(loginUser);
 
 // secured routes
 
-router.route("/logout").post(verifyJWT, logoutUser);
+router.route("/logout").post(logoutRateLimiter, verifyJWT, logoutUser);
 
 router.route("/refreshtoken").post(refreshAccessToken);
 
