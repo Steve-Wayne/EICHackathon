@@ -8,17 +8,13 @@ import { changeCurrentPassword } from "../controllers/user.controller.js";
 import rateLimit from "express-rate-limit";
 
 const router = Router();
-
-
 // Configure rate limiter for logout route
 const logoutRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per windowMs
   message: "Too many logout attempts from this IP, please try again later.",
 });
-
 router.route("/register").post(registerUser);
-
 // Rate limiter for the /register route
 const registerRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
