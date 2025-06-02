@@ -18,7 +18,7 @@ const logoutRateLimiter = rateLimit({
 });
 
 router.route("/register").post(registerUser);
-=======
+
 // Rate limiter for the /register route
 const registerRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
