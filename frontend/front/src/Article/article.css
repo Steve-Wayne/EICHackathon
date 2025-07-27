@@ -101,6 +101,6 @@
 .loading-text,
 .error-text {
   font-size: 1.2rem;
-  color: red;
+  color: rgb(234, 234, 234);
   margin-top: 25px;
 }

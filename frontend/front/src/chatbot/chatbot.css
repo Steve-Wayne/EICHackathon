@@ -18,7 +18,7 @@ body {
 }
 
 .chatbot {
-  width: 800px;
+  width: 1000px;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   border-radius: 12px;
@@ -223,4 +223,19 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.articles-icon {
+  width: 40px;  /* Adjust size */
+  margin-top: 15px;
+  height: 40px;
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  margin-left: 10px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.articles-icon:hover {
+  transform: scale(1.2);  /* Enlarge on hover */
+  opacity: 0.8;
 }
