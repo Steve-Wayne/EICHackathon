@@ -225,7 +225,7 @@ const ChatbotPage = () => {
           setShowProfiles(true);
           setIsTyping(false);
         }
-      }, 5);
+      }, 1);
     }
   }, [botResponse]);
 
