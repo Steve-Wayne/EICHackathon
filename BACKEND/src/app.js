@@ -6,6 +6,14 @@ import lusca from "lusca";
 dotenv.config();
 
 const app = express();
+app.use(
+  cors({
+    // AI FIX START
+    origin: false,
+    // AI FIX END
+    credentials: true,
+  }),
+);
 
 app.use(
   cors({
@@ -14,32 +22,15 @@ app.use(
   })
 );
 
-app.use(express.json({ limit: '16kb' }));
-app.use(express.urlencoded({ extended: true, limit: '16kb' }));
-app.use(express.static('public'));
-// AI FIX START
+app.use(express.json({ limit: "16kb" }));
+app.use(express.urlencoded({ extended: true, limit: "16kb" }));
+app.use(express.static("public"));
 app.use(cookieParser());
-// Add express-session middleware for session management, required by lusca.csrf
-// IMPORTANT: Ensure 'session' is available from 'express-session' require.
-app.use(
-  session({
-    secret:
-      process.env.SESSION_SECRET ||
-      'a_very_secure_secret_key_that_you_must_change',
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    },
-  }),
-);
-// Add lusca.csrf middleware for CSRF protection
-// IMPORTANT: Ensure 'csrf' is available from 'lusca' require.
-app.use(csrf());
-// AI FIX END
+
+
 // Routes
+import userRouter from "./routes/user.routes.js";
+import chatbotRouter from "./routes/chatbot.routes.js";
 import articlesRouter from "./routes/articles.routes.js"; // Import new articles route
 import productHuntRouter from "./routes/producthunt.routes.js";
 // Routes declaration
