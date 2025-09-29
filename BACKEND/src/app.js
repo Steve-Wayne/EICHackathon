@@ -6,12 +6,6 @@ import lusca from "lusca";
 dotenv.config();
 
 const app = express();
-app.use(
-  cors({
-    origin: false,
-    credentials: true,
-  }),
-);
 
 app.use(
   cors({
@@ -20,15 +14,30 @@ app.use(
   })
 );
 
-app.use(express.json({ limit: "16kb" }));
-app.use(express.urlencoded({ extended: true, limit: "16kb" }));
-app.use(express.static("public"));
+app.use(express.json({ limit: '16kb' }));
+app.use(express.urlencoded({ extended: true, limit: '16kb' }));
+app.use(express.static('public'));
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const csrf = require('lusca').csrf;
+// AI FIX START
 app.use(cookieParser());
-
-
+app.use(
+  session({
+    secret:
+      process.env.SESSION_SECRET || 'a_strong_secret_for_development_only',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60000, // 1 minute, as per guidance example
+    },
+  }),
+);
+app.use(csrf());
+// AI FIX END
 // Routes
-import userRouter from "./routes/user.routes.js";
-import chatbotRouter from "./routes/chatbot.routes.js";
 import articlesRouter from "./routes/articles.routes.js"; // Import new articles route
 import productHuntRouter from "./routes/producthunt.routes.js";
 // Routes declaration
