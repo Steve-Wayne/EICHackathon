@@ -6,6 +6,12 @@ import lusca from "lusca";
 dotenv.config();
 
 const app = express();
+app.use(
+  cors({
+    origin: false,
+    credentials: true,
+  }),
+);
 
 app.use(
   cors({
